@@ -4,15 +4,15 @@ const app = express();
 const { connectDB } = require("./config/database");
 const User = require("./models/user")
 
-app.post("/signup" , async (req,res) => {
-    const userObj = {
-        firstName: "Jahnavi",
-        lastName: "Banotra",
-        emailId: "jahnaviaiimsd@gmail.com",
-        password: "Jahnavi@123"
-    }
+app.use(express.json());
 
-    const user = new User(userObj)
+app.post("/signup" , async (req,res) => {
+
+    
+    console.log(req.body);
+    
+    const user = new User(req.body)
+    // Agar data bhejte samay db me kisi field ka spelling galat ho jaye to us field me data nahi jata hai
     try {
         await user.save()
         res.send("User Saved Successfully")
