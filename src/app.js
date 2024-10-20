@@ -1,27 +1,38 @@
 const express = require('express');
 const app = express();
 
-// Global error-handling middleware
-// app.use((err, req, res, next) => {
-//     console.log("error aayega");
-//     res.status(500).send("error nahi aayeaa");
-// });
+const { connectDB } = require("./config/database");
+const User = require("./models/user")
 
-// Route that throws an error
-app.get("/user/getAllData", (req, res, next) => {
-    try {
-        throw new Error("jsdxn");  // Intentionally throwing an error
-        res.send("error aa gaya bhago");  // This line won't be reached
-    } catch (err) {
-        next(err);  // Pass the error to the global error-handling middleware
+app.post("/signup" , async (req,res) => {
+    const userObj = {
+        firstName: "Jahnavi",
+        lastName: "Banotra",
+        emailId: "jahnaviaiimsd@gmail.com",
+        password: "Jahnavi@123"
     }
-});
 
-app.use("/",(err,req,res,next) => {
-    res.status(500).send("sachin")
+    const user = new User(userObj)
+    try {
+        await user.save()
+        res.send("User Saved Successfully")
+    } catch(err ) {
+        res.status(400).send("Error saving the user" + err.message);
+    }
+    
 })
 
-app.listen(7777, (err) => {
-    if (err) console.log("nahi");
-    console.log("listening on port 7777");
-});
+
+connectDB().then(() =>{
+    console.log("Connected to the database devTinder")
+    app.listen(7777, (err) => {
+        if (err) console.log("nahi");
+        console.log("listening on port 7777");
+    });
+})
+.catch(err => {
+    console.log(err.message);
+})
+
+
+
