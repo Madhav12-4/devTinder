@@ -2,43 +2,26 @@ const express = require('express');
 
 const app = express();
 
-        app.use("/test",(req,res) => {
-            res.send(`is nadi ki dhar se se thandhi hawa aati to hai <br> naav jarjar hi sahi lehro se takrati toh hai <br> ek chingari kahin se dhoondh lao dost <br> is diye me tel se doobi hui baati to hai`);
-            
-        })
+app.get("/user", (req, res, next) => {
+    console.log("Motherland or Death");
+    req.sachin = "Sachin";  // Setting a custom property on the request object
+    next();                 // Passing control to the next middleware
+},(req,res,next) => {
+    console.log("Hard things about hard things");
+    next();
+    // res.send( req.sachin);
+},(req,res,next) => {
+    console.log("Iska matlab ye hai ki jo request object hai wo aage paas hote rehta hai agar aage bhi next likh denge to ye fallback route me jayega aur yahi req ke saath matlab aage ")
+    res.send("Bas khel liya jitna khelna tha matlab kuch points note karne wali hai ki agar ek baar response chala gaya fir aapne next kiya hai to connection closed ho jaata hai to dobara response nahi bhej sakte isliye agar aapne next likha hai but aage ke request handler functions nahi hai ya hai to bhi ye error dega k iek baar response ja chuka hai ab nahi bhejenge")
+    // next();
+});
 
-        app.get("/user", (req,res) => {
-            res.send({
-                firstname: "Jahnavi",
-                lastname: "Banotra",
-                city: "Delhi",
-                college: "AIIMS"
-            })
-        })
+app.use((req, res,next) => {
+    next();
+    res.send(req.sachin);   // Send "Sachin" as the response body
+});
 
-        app.post("/user", (req,res) => {
-            res.send("User updated successfully");
-        })
-
-        app.delete("/user", (req,res) => {
-            res.send("User deleted Successfully Kuch database me call maroge ho jayega")
-        })
-        
-        app.put("/user", (req,res) => {
-            res.send("The difference between put and patch is that put replaces the thing in db while patch just make partial changes althogh put and patch both updates the db")
-        })
-         
-
-        
-        
-        
-        app.use((req, res) => {
-            
-        res.send("agar main res, aur req ka naaame change karke use karu toh");
-        
-    });
-
-    app.listen(7777, (err) => {
-        if(err) console.log(err);
-        console.log("listening on port jo bhi ho abhi 7777 hai");
-    })
+app.listen(7777, (err) => {
+    if (err) console.log(err);
+    console.log("listening on port jo bhi ho abhi 7777 hai");
+});
