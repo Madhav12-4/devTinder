@@ -1,21 +1,27 @@
 const express = require('express');
-const {adminAuth, userAuth} = require('./middlewares/auth.js');
-
 const app = express();
 
-app.use("/user", userAuth)
+// Global error-handling middleware
+// app.use((err, req, res, next) => {
+//     console.log("error aayega");
+//     res.status(500).send("error nahi aayeaa");
+// });
 
-app.get("/admin",adminAuth,(req,res) => {
-    req.send("Soraho singar sajal sorahe baris me ");
+// Route that throws an error
+app.get("/user/getAllData", (req, res, next) => {
+    try {
+        throw new Error("jsdxn");  // Intentionally throwing an error
+        res.send("error aa gaya bhago");  // This line won't be reached
+    } catch (err) {
+        next(err);  // Pass the error to the global error-handling middleware
+    }
+});
+
+app.use("/",(err,req,res,next) => {
+    res.status(500).send("sachin")
 })
-
-app.get("/user/getAllData", (req,res,next) => {
-    res.send(req.body);
-})
-
-
 
 app.listen(7777, (err) => {
-    if (err) console.log(err);
-    console.log("listening on port jo bhi ho abhi 7777 hai");
+    if (err) console.log("nahi");
+    console.log("listening on port 7777");
 });
