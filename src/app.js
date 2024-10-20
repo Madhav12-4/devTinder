@@ -57,6 +57,41 @@ app.post("/signup" , async (req,res) => {
     
 })
 
+app.delete("/user",async (req,res) => {
+    const userId = req.body.userId;
+
+    try{
+        const user = await User.findByIdAndDelete(userId)
+        console.log(user);
+        res.send("User deleted successfully")
+    }
+    catch{
+        res.status(400).send("Error deleteting the user",+ err.message);
+    }
+})
+
+app.patch("/user", async (req, res) => {
+    const userId = req.body.userId;
+    const data = req.body;
+
+    try {
+        const user = await User.findOneAndUpdate(
+            { emailId: req.body.emailId },
+            data,
+            { upsert: true, new: true } // upsert=false to avoid creating new docs, new=true to return the updated document
+        );
+
+        if (!user) {
+            return res.status(404).send("User not found");
+        }
+
+        res.status(200).send(user);
+    } catch (err) {
+        res.status(400).send("Error updating the user");
+    }
+});
+
+
 
 connectDB().then(() =>{
     console.log("Connected to the database devTinder")
