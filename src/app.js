@@ -78,7 +78,7 @@ app.patch("/user", async (req, res) => {
         const user = await User.findOneAndUpdate(
             { emailId: req.body.emailId },
             data,
-            { upsert: true, new: true } // upsert=false to avoid creating new docs, new=true to return the updated document
+            { upsert: true, new: true, runValidators: true } // upsert=false to avoid creating new docs, new=true to return the updated document
         );
 
         if (!user) {
