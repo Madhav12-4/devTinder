@@ -1,40 +1,33 @@
-const adminAuth = (req,res,next) => {
-    const token = "cndjs";
-    console.log("Wahi hain surate phir bhi wahi mai hun wahi tum ho magar khoya hua hu main")
-    if(token === "xyz"){
-        req.body = {
-            padhai: "Bahut kuch paadhna hai abhi idhar udhar nahi kar sakte",
-            kya: "Matlab projects revise karne hain, dsa karte rehna hai ",
-            aur:"contest dete rehna hai jo padha rahe hain keval lecture nahi dekhna hai",
-            aur: "Agar samay mile to dostoevesky short stories and amazon leeter to shareholders sama alta blogs and reviews karmayog"
-        }
-        next();
-    }
-    else{
-        res.status(401).send("Is Nadi ki dhaar se thandi hawa aati to hai naav jarjar hi sahi lehron se takrati to hai")
-    }
-    
-}
+const jwt = require("jsonwebtoken");
+const User = require("../models/user")
 
-const userAuth = (req,res,next) => {
-    const token = "xyz";
-    console.log("Wahi hain surate phir bhi wahi mai hun wahi tum ho magar khoya hua hu main")
-    if(token === "xyz"){
-        req.body = {
-            padhai: "Bahut kuch paadhna hai abhi idhar udhar nahi kar sakte",
-            kya: "Matlab projects revise karne hain, dsa karte rehna hai ",
-            aur:"contest dete rehna hai jo padha rahe hain keval lecture nahi dekhna hai",
-            aur: "Agar samay mile to dostoevesky short stories and amazon leeter to shareholders sama alta blogs and reviews karmayog"
+
+
+const userAuth = async (req,res,next) => {
+    try {
+        const { token } = req.cookies;
+
+        if(!token){
+            throw new Error("Token is not valid!!!! ");
         }
+
+        const decodeObj = await jwt.verify(token, "PrivateKey");
+
+        const { _id } = decodeObj;
+
+        const user = await User.findById(_id);
+
+        if(!user){
+            throw new Error("User Nahi Mila ")
+        }
+        req.user = user;
         next();
-    }
-    else{
-        res.status(401).send("Is Nadi ki dhaar se thandi hawa aati to hai naav jarjar hi sahi lehron se takrati to hai")
+    } catch (err) {
+        res.status(400).send("ERROR: "+ err.message);
     }
     
 }
 
 module.exports = {
-    adminAuth,
     userAuth,
 }

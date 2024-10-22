@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const validator = require ('validator');
 
 // agar hum type n bhi provide karein toh bhi accept hota hai
 // validate ke ander validator usme hum custom function provide kar sakte hain aur jo message hai usme custom functions provide karte hain
@@ -17,6 +18,11 @@ const userSchema = new mongoose.Schema({
         required: true,
         lowercase: true,
         unique: true,
+        validate(value) {
+            if(!validator.isEmail(value)){
+                throw new Error("Ye sahi email nahi hai");
+            }
+        }
 
     },
     password: {
@@ -24,11 +30,10 @@ const userSchema = new mongoose.Schema({
         required: true,
         minlength: 8,
         maxlength: 128,
-        validate: {
-            validator: function(v){
-                return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(v);
-            },
-            message: props => `Password must contain at least 1 lowercase letter, 1 uppercase letter, 1 digit, and 1 special character`
+        validate(value) {
+            if(!validator.isStrongPassword(value)){
+                throw new Error("Your password should have  minLength: 8, minLowercase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 1,")
+            }
         }
     },
     age: {
@@ -48,6 +53,13 @@ const userSchema = new mongoose.Schema({
     photoUrl: {
         type: String,
         default: "https://in.pinterest.com/pin/4011087177006454/",
+        validate(value) {
+            if(value.length == 0){
+                console.log("sahi hai");
+            } else if(!validator.isURL(value)){
+                throw new Error("This is not a valid photo url")
+            }
+        }
     },
     about: {
         type: String,
