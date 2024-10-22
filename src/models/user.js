@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 const validator = require ('validator');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 
 // agar hum type n bhi provide karein toh bhi accept hota hai
 // validate ke ander validator usme hum custom function provide kar sakte hain aur jo message hai usme custom functions provide karte hain
@@ -71,6 +73,23 @@ const userSchema = new mongoose.Schema({
 },{
     timestamps: true
 })
+
+userSchema.methods.getJWT =async function() {
+    const user = this;
+
+    const token = await jwt.sign({_id: user._id},"PrivateKey", {expiresIn : "7d"});
+
+    return token;
+}
+
+userSchema.methods.validatePassword = async function(passwordInputByUser) {
+    const user = this;
+    const passwordHash = this.password;
+
+    const token = await bcrypt.compare(passwordInputByUser, passwordHash);
+
+    return token;
+}
 
 const User = mongoose.model("User", userSchema);
 
